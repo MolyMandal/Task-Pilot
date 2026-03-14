@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Smart Clock App</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500&display=swap" rel="stylesheet">
+
+<style>
+
+body{
+    margin:0;
+    font-family:'Orbitron', sans-serif;
+    background:#0f0f0f;
+    color:white;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    height:100vh;
+}
+
+.container{
+    text-align:center;
+    padding:40px;
+    border-radius:15px;
+    background:#1a1a1a;
+    box-shadow:0 0 20px #00ffff;
+}
+
+.clock{
+    font-size:60px;
+    margin-bottom:20px;
+    color:#00ffff;
+    text-shadow:0 0 10px #00ffff;
+}
+
+.section{
+    margin-top:25px;
+}
+
+button{
+    padding:8px 15px;
+    margin:5px;
+    border:none;
+    background:#00ffff;
+    color:black;
+    font-weight:bold;
+    cursor:pointer;
+    border-radius:5px;
+}
+
+button:hover{
+    background:#00cccc;
+}
+
+input{
+    padding:8px;
+    border-radius:5px;
+    border:none;
+}
+
+.stopwatch-display{
+    font-size:35px;
+    margin:10px 0;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>Smart Clock</h1>
+
+<div id="clock" class="clock"></div>
+
+<!-- Alarm Section -->
+
+<div class="section">
+
+<h2>Alarm</h2>
+
+<input type="time" id="alarmTime">
+<button onclick="setAlarm()">Set Alarm</button>
+
+</div>
+
+<!-- Stopwatch Section -->
+
+<div class="section">
+
+<h2>Stopwatch</h2>
+
+<div id="display" class="stopwatch-display">00:00:00</div>
+
+<button onclick="start()">Start</button>
+<button onclick="stop()">Stop</button>
+<button onclick="reset()">Reset</button>
+
+</div>
+
+<audio id="alarmSound" src="https://www.soundjay.com/misc/sounds/bell-ringing-05.mp3"></audio>
+
+</div>
+
+<script>
+
+/////////////////////
+// DIGITAL CLOCK
+/////////////////////
+
+function showTime(){
+
+let now = new Date();
+
+let h = now.getHours();
+let m = now.getMinutes();
+let s = now.getSeconds();
+
+let session = "AM";
+
+if(h == 0){
+    h = 12;
+}
+
+if(h > 12){
+    h = h - 12;
+    session = "PM";
+}
+
+h = (h < 10) ? "0"+h : h;
+m = (m < 10) ? "0"+m : m;
+s = (s < 10) ? "0"+s : s;
+
+let time = h + ":" + m + ":" + s + " " + session;
+
+document.getElementById("clock").innerText = time;
+
+checkAlarm();
+
+}
+
+setInterval(showTime,1000);
+
+/////////////////////
+// ALARM FEATURE
+/////////////////////
+
+let alarmTime = null;
+
+function setAlarm(){
+
+alarmTime = document.getElementById("alarmTime").value;
+
+alert("Alarm set for " + alarmTime);
+
+}
+
+function checkAlarm(){
+
+let now = new Date();
+
+let currentTime = now.toTimeString().slice(0,5);
+
+if(alarmTime === currentTime){
+
+document.getElementById("alarmSound").play();
+
+alert("Alarm ringing!");
+
+alarmTime = null;
+
+}
+
+}
+
+/////////////////////
+// STOPWATCH
+/////////////////////
+
+let seconds = 0;
+let minutes = 0;
+let hours = 0;
+
+let timer = null;
+
+function updateDisplay(){
+
+let h = (hours < 10) ? "0"+hours : hours;
+let m = (minutes < 10) ? "0"+minutes : minutes;
+let s = (seconds < 10) ? "0"+seconds : seconds;
+
+document.getElementById("display").innerText =
+h + ":" + m + ":" + s;
+
+}
+
+function start(){
+
+if(timer !== null){
+return;
+}
+
+timer = setInterval(function(){
+
+seconds++;
+
+if(seconds == 60){
+seconds = 0;
+minutes++;
+}
+
+if(minutes == 60){
+minutes = 0;
+hours++;
+}
+
+updateDisplay();
+
+},1000);
+
+}
+
+function stop(){
+
+clearInterval(timer);
+
+timer = null;
+
+}
+
+function reset(){
+
+clearInterval(timer);
+
+timer = null;
+
+seconds = 0;
+minutes = 0;
+hours = 0;
+
+updateDisplay();
+
+}
+
+</script>
+
+</body>
+</html>

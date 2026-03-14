@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Task Pilot</title>
+
+<style>
+
+body{
+font-family: Arial;
+background: linear-gradient(135deg,#667eea,#764ba2);
+height:100vh;
+display:flex;
+justify-content:center;
+align-items:center;
+margin:0;
+}
+
+.dark-mode{
+background:#1e1e1e;
+}
+
+.container{
+background:white;
+padding:30px;
+border-radius:10px;
+width:420px;
+box-shadow:0 10px 25px rgba(0,0,0,0.2);
+}
+
+.dark-mode .container{
+background:#2c2c2c;
+color:white;
+}
+
+h1{
+text-align:center;
+}
+
+.input-area{
+display:flex;
+gap:10px;
+margin-bottom:10px;
+}
+
+input{
+flex:1;
+padding:10px;
+border-radius:5px;
+border:1px solid #ccc;
+}
+
+button{
+padding:10px;
+border:none;
+background:#667eea;
+color:white;
+border-radius:5px;
+cursor:pointer;
+}
+
+button:hover{
+background:#5563d1;
+}
+
+ul{
+padding:0;
+margin-top:20px;
+}
+
+li{
+list-style:none;
+padding:10px;
+margin-top:10px;
+background:#f3f3f3;
+border-radius:5px;
+display:flex;
+justify-content:space-between;
+align-items:center;
+}
+
+.dark-mode li{
+background:#444;
+}
+
+.completed{
+text-decoration:line-through;
+color:gray;
+}
+
+.task-buttons button{
+margin-left:5px;
+font-size:12px;
+padding:5px 8px;
+}
+
+.delete-btn{
+background:red;
+}
+
+.edit-btn{
+background:orange;
+}
+
+.complete-btn{
+background:green;
+}
+
+.extra-buttons{
+display:flex;
+justify-content:space-between;
+margin-top:10px;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>Task Pilot</h1>
+
+<div class="input-area">
+<input type="text" id="taskInput" placeholder="Enter new task">
+<button onclick="addTask()">Add</button>
+</div>
+
+<p id="taskCounter">Tasks: 0</p>
+
+<div class="extra-buttons">
+<button onclick="clearAll()">Clear All</button>
+<button onclick="toggleDarkMode()">Dark Mode</button>
+</div>
+
+<ul id="taskList"></ul>
+
+</div>
+
+<script>
+
+let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
+
+function renderTasks(){
+
+let list = document.getElementById("taskList");
+list.innerHTML="";
+
+tasks.forEach((task,index)=>{
+
+let li = document.createElement("li");
+
+if(task.completed){
+li.classList.add("completed");
+}
+
+li.innerHTML = `
+<span>${task.text}</span>
+
+<div class="task-buttons">
+
+<button class="complete-btn" onclick="toggleTask(${index})">✔</button>
+
+<button class="edit-btn" onclick="editTask(${index})">Edit</button>
+
+<button class="delete-btn" onclick="deleteTask(${index})">X</button>
+
+</div>
+`;
+
+list.appendChild(li);
+
+});
+
+document.getElementById("taskCounter").innerText = "Tasks: " + tasks.length;
+
+localStorage.setItem("tasks",JSON.stringify(tasks));
+
+}
+
+function addTask(){
+
+let input = document.getElementById("taskInput");
+
+if(input.value===""){
+alert("Please enter a task");
+return;
+}
+
+tasks.push({
+text:input.value,
+completed:false
+});
+
+input.value="";
+
+renderTasks();
+
+}
+
+function deleteTask(index){
+
+tasks.splice(index,1);
+
+renderTasks();
+
+}
+
+function toggleTask(index){
+
+tasks[index].completed = !tasks[index].completed;
+
+renderTasks();
+
+}
+
+function editTask(index){
+
+let newTask = prompt("Edit your task",tasks[index].text);
+
+if(newTask !== null && newTask !== ""){
+tasks[index].text = newTask;
+renderTasks();
+}
+
+}
+
+function clearAll(){
+
+if(confirm("Delete all tasks?")){
+tasks=[];
+renderTasks();
+}
+
+}
+
+function toggleDarkMode(){
+
+document.body.classList.toggle("dark-mode");
+
+}
+
+renderTasks();
+
+</script>
+
+</body>
+</html>
